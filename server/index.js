@@ -65,10 +65,10 @@ const startServer = async () => {
     // Connect to Database first
     await connectDB();
 
-    // Warm up the embedder model (Large file, takes time)
-    console.log('⏳ Loading embedding model...');
+    // Warm up the embedder model (Currently Mocked)
+    console.log('⏳ Initializing embedder pipeline...');
     await getEmbedder();
-    console.log('✅ Embedder model ready');
+    console.log('✅ Embedder ready (Mock Mode)');
 
     app.listen(PORT, () => {
         console.log(`🚀 Server running on http://localhost:${PORT}`);

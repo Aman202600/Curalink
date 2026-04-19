@@ -1,18 +1,23 @@
-const { pipeline } = require('@xenova/transformers');
+// Mock Embedder - Removed @xenova/transformers to fix 'sharp' deployment issues on Render.
+// This allows the app to run without heavy local dependencies.
 
-let embedder;
-
+/**
+ * Placeholder for the model loader.
+ * Returns a simple resolved promise to keep existing calling code compatible.
+ */
 const getEmbedder = async () => {
-    if (!embedder) {
-        embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
-    }
-    return embedder;
+    return Promise.resolve(true);
 };
 
+/**
+ * Generates a dummy embedding vector.
+ * @param {string} text - The input text (ignored in this mock).
+ * @returns {Promise<number[]>} - A 384-dimensional array of zeros.
+ */
 const embedText = async (text) => {
-    const embed = await getEmbedder();
-    const out = await embed(text, { pooling: 'mean', normalize: true });
-    return Array.from(out.data); // float[] ready for MongoDB
+    // 384 dimensions matches the previous all-MiniLM-L6-v2 model
+    return new Array(384).fill(0); 
 };
 
 module.exports = { embedText, getEmbedder };
+
