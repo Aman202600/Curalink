@@ -5,7 +5,7 @@ import ChatWindow from './components/ChatWindow';
 import SourceCard from './components/SourceCard';
 import { Info, Database, Layers, User } from 'lucide-react';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function App() {
   const [sessionId] = useState(() => localStorage.getItem('curalink_session') || uuidv4());
@@ -13,7 +13,7 @@ function App() {
   const [sources, setSources] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
-  
+
   // Example state for disease and location
   const [userInfo, setUserInfo] = useState({ disease: 'General', location: 'Remote' });
 
@@ -25,17 +25,17 @@ function App() {
     setIsLoading(true);
     setSources([]); // ⚡ RESET EVIDENCE: Clear stale data before each search
     setMessages(prev => [...prev, { role: 'user', content: query }]);
-    
+
     // Simulate steps for the loader
     const steps = ['fetching', 'embedding', 'ranking', 'generating'];
     let stepIdx = 0;
     setCurrentStep(steps[0]);
-    
+
     const stepInterval = setInterval(() => {
-        if (stepIdx < steps.length - 2) { // Last step is handled by API return
-            stepIdx++;
-            setCurrentStep(steps[stepIdx]);
-        }
+      if (stepIdx < steps.length - 2) { // Last step is handled by API return
+        stepIdx++;
+        setCurrentStep(steps[stepIdx]);
+      }
     }, 2000);
 
     try {
@@ -65,10 +65,10 @@ function App() {
     <div className="app-container flex flex-col lg:flex-row bg-white font-sans text-slate-900 h-screen overflow-hidden">
       {/* Sidebar / Chat Panel - Full width on mobile, Fixed on desktop */}
       <div className="w-full lg:w-[450px] xl:w-[500px] 2xl:w-[600px] h-[500px] lg:h-full shrink-0 border-b lg:border-r lg:border-b-0 border-slate-200 shadow-xl z-20 flex flex-col overflow-hidden">
-        <ChatWindow 
-          messages={messages} 
-          onSendMessage={handleSendMessage} 
-          isLoading={isLoading} 
+        <ChatWindow
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          isLoading={isLoading}
           currentStep={currentStep}
         />
       </div>
@@ -86,7 +86,7 @@ function App() {
                 <span className="block text-[11px] lg:text-[13px] font-bold text-slate-800 tracking-tight leading-tight whitespace-nowrap">Live Medical Index</span>
               </div>
             </div>
-            
+
             <div className="hidden md:block h-10 w-px bg-slate-200"></div>
 
             <div className="hidden md:flex items-center gap-3">
@@ -99,15 +99,15 @@ function App() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 lg:gap-4">
-             <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-2xl shadow-sm">
-                <div className="w-1.5 lg:w-2 h-1.5 lg:h-2 rounded-full bg-teal-500 animate-pulse"></div>
-                <span className="text-[9px] lg:text-[11px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap uppercase">Active</span>
-             </div>
-             <div className="w-8 lg:w-10 h-8 lg:h-10 rounded-xl lg:rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-200 transition-colors cursor-pointer">
-                <User size={16} className="lg:w-[20px] lg:h-[20px]" />
-             </div>
+            <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-2xl shadow-sm">
+              <div className="w-1.5 lg:w-2 h-1.5 lg:h-2 rounded-full bg-teal-500 animate-pulse"></div>
+              <span className="text-[9px] lg:text-[11px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap uppercase">Active</span>
+            </div>
+            <div className="w-8 lg:w-10 h-8 lg:h-10 rounded-xl lg:rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-200 transition-colors cursor-pointer">
+              <User size={16} className="lg:w-[20px] lg:h-[20px]" />
+            </div>
           </div>
         </header>
 
