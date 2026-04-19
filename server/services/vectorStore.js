@@ -80,9 +80,9 @@ const rankAndFilterResults = (results, disease, query, location) => {
         return { ...r, score: parseFloat(score.toFixed(2)), studyType };
     });
 
-    // 🧬 [CRITICAL] REVISED FILTERING RULE: Remove papers with score < 0.45
+    // 🧬 [REVISED] REJECT ONLY IF ABSOLUTE JUNK
     return scored
-        .filter(r => r.score >= 0.45)
+        .filter(r => r.score >= 0.2) // Lowered from 0.45 for better recall in mock mode
         .sort((a, b) => b.score - a.score);
 };
 
@@ -161,7 +161,7 @@ const retrieveRelevant = async (query, sessionId, disease, location) => {
             },
             {
                 $match: {
-                    searchScore: { $gte: 0.75 }
+                    searchScore: { $gte: 0.1 } // Lowered threshold significantly for Mock Mode
                 }
             }
         ]);
@@ -186,6 +186,16 @@ const retrieveRelevant = async (query, sessionId, disease, location) => {
         // 🧬 Step 7: Strict Source Separation
         const papers = ranked.filter(r => r.source === 'pubmed' || r.source === 'openalex');
         const trials = ranked.filter(r => r.source === 'clinicaltrials');
+
+        // 🧬 Final Fallback: If everything was filtered out, return top 5 unique results from current session database
+        if (papers.length === 0 && trials.length === 0) {
+            console.log('🚨 [DEBUG] All results filtered out. Triggering Final Session Fallback...');
+            const sessionBackup = await Research.find({ sessionId }).limit(5);
+            return {
+                papers: sessionBackup.filter(r => r.source !== 'clinicaltrials'),
+                trials: sessionBackup.filter(r => r.source === 'clinicaltrials')
+            };
+        }
 
         return {
             papers: papers.slice(0, 8),
